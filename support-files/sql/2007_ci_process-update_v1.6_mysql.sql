@@ -28,6 +28,23 @@ BEGIN
         ALTER TABLE T_TEMPLATE_PIPELINE ADD COLUMN `DELETED` bit(1) DEFAULT b'0' COMMENT '流水线已被软删除';
     END IF;
 
+    IF NOT EXISTS(SELECT 1
+                      FROM information_schema.COLUMNS
+                      WHERE TABLE_SCHEMA = db
+                        AND TABLE_NAME = 'T_PROJECT_PIPELINE_CALLBACK'
+                        AND COLUMN_NAME = 'ENABLE') THEN
+        ALTER TABLE T_PROJECT_PIPELINE_CALLBACK ADD COLUMN `ENABLE` bit(1) NOT NULL DEFAULT b'1' COMMENT '启用';
+    END IF;
+
+    IF NOT EXISTS(SELECT 1
+              FROM information_schema.COLUMNS
+              WHERE TABLE_SCHEMA = db
+                  AND TABLE_NAME = 'T_PIPELINE_INFO'
+                  AND COLUMN_NAME = 'ID') THEN
+        ALTER TABLE T_PIPELINE_INFO ADD COLUMN `ID` BIGINT NULL AUTO_INCREMENT,ADD KEY(`ID`);
+
+    END IF;
+
     COMMIT;
 END <CI_UBF>
 DELIMITER ;
